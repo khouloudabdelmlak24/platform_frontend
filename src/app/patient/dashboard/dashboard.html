@@ -1,1 +1,25 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <header>
+    <h1>Dashboard Patient</h1>
+    <button (click)="logout()">Déconnexion</button>
+  </header>
+
+  <p>Bienvenue — connexion réussie ✅</p>
+
+  <p><strong>Chargement du profil :</strong> {{ apiStatus }}</p>
+
+  <div *ngIf="profile">
+    <h2>Mon profil</h2>
+    <ul>
+      <li><strong>Nom :</strong> {{ profile.firstName }} {{ profile.lastName }}</li>
+      <li><strong>Email :</strong> {{ profile.email }}</li>
+      <li><strong>Date de naissance :</strong> {{ profile.dateOfBirth }}</li>
+      <li><strong>Genre :</strong> {{ profile.gender }}</li>
+      <li><strong>Adresse :</strong> {{ profile.address }}</li>
+      <li><strong>Contact d'urgence :</strong> {{ profile.emergencyContact }}</li>
+      <li><strong>Antécédents médicaux :</strong> {{ profile.medicalHistory }}</li>
+      <li><strong>Antécédents familiaux :</strong> {{ profile.familyHistory }}</li>
+      <li><strong>Traitements en cours :</strong> {{ profile.currentTreatments }}</li>
+    </ul>
+  </div>
+</div>
