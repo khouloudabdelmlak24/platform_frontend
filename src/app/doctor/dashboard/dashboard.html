@@ -4,7 +4,39 @@
     <button (click)="logout()">Déconnexion</button>
   </header>
 
-  <p>Bienvenue Docteur — connexion réussie ✅</p>
+  <div class="stats">
+    <div class="stat-card">
+      <span class="stat-number">{{ patients.length }}</span>
+      <span class="stat-label">Patients</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ completedProfiles }}</span>
+      <span class="stat-label">Profils complétés</span>
+    </div>
+  </div>
 
-  <p><strong>Test API /api/patients :</strong> {{ apiStatus }}</p>
+  <h2>Liste des patients</h2>
+
+  <p *ngIf="isLoading">Chargement...</p>
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p *ngIf="!isLoading && !errorMessage && patients.length === 0">Aucun patient pour le moment.</p>
+
+  <table *ngIf="patients.length > 0">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Âge</th>
+        <th>Genre</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of patients">
+        <td>{{ p.firstName }} {{ p.lastName }}</td>
+        <td>{{ p.email }}</td>
+        <td>{{ getAge(p.dateOfBirth) ?? '—' }}</td>
+        <td>{{ p.gender || '—' }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>

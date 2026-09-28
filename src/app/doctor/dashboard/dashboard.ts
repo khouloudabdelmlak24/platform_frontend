@@ -4,6 +4,15 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Auth } from '../../core/services/auth';
 
+interface PatientItem {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  dateOfBirth: string | null;
+  gender: string | null;
+}
+
 @Component({
   selector: 'app-doctor-dashboard',
   standalone: true,
@@ -13,8 +22,9 @@ import { Auth } from '../../core/services/auth';
 })
 export class DashboardComponent implements OnInit {
 
-  patients: any[] = [];
-  apiStatus: string = 'Chargement...';
+  patients: PatientItem[] = [];
+  isLoading = true;
+  errorMessage = '';
 
   constructor(
     private authService: Auth,
@@ -29,17 +39,36 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    this.http.get<any[]>('http://localhost:8082/api/patients').subscribe({
+    this.http.get<PatientItem[]>('http://localhost:8082/api/patients').subscribe({
       next: (data) => {
         this.patients = data;
-        this.apiStatus = 'Succès : ' + data.length + ' patient(s) reçu(s)';
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.apiStatus = 'Erreur ' + err.status + ' : ' + (err.error?.message ?? err.statusText ?? 'inconnue');
+        this.errorMessage = 'Erreur ' + err.status + ' : ' + (err.error?.message ?? err.statusText ?? 'inconnue');
+        this.isLoading = false;
         this.cdr.detectChanges();
       }
     });
+  }
+
+  // Statistique : nombre de patients dont le profil est renseigné (date de naissance présente)
+  get completedProfiles(): number {
+    return this.patients.filter(p => !!p.dateOfBirth).length;
+  }
+
+  // Calcule l'âge à partir de la date de naissance (null si non renseignée)
+  getAge(dateOfBirth: string | null): number | null {
+    if (!dateOfBirth) return null;
+    const birth = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
   }
 
   logout(): void {

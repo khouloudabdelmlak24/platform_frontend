@@ -1,0 +1,37 @@
+<div class="register-container">
+  <div class="register-card">
+    <h1>Créer un compte</h1>
+    <p class="subtitle">Plateforme médicale intelligente</p>
+
+    <form (ngSubmit)="onSubmit()">
+      <label for="firstName">Prénom</label>
+      <input id="firstName" name="firstName" type="text" [(ngModel)]="firstName" required />
+
+      <label for="lastName">Nom</label>
+      <input id="lastName" name="lastName" type="text" [(ngModel)]="lastName" required />
+
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" [(ngModel)]="email" required />
+
+      <label for="password">Mot de passe</label>
+      <input id="password" name="password" type="password" [(ngModel)]="password" required />
+
+      <label for="phone">Téléphone</label>
+      <input id="phone" name="phone" type="tel" [(ngModel)]="phone" />
+
+      <label for="role">Je suis</label>
+      <select id="role" name="role" [(ngModel)]="role">
+        <option value="PATIENT">Patient</option>
+        <option value="DOCTOR">Médecin</option>
+      </select>
+
+      <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <button type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Inscription en cours...' : "S'inscrire" }}
+      </button>
+    </form>
+
+    <p class="link">Déjà un compte ? <a routerLink="/login">Se connecter</a></p>
+  </div>
+</div>

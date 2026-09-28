@@ -1,0 +1,72 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 16px;
+  background: #f3f4f6;
+  min-height: 100vh;
+}
+
+.register-card {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  height: fit-content;
+}
+
+h1 {
+  text-align: center;
+  color: #1976d2;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+label {
+  display: block;
+  margin: 12px 0 4px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  margin-top: 16px;
+  padding: 10px;
+  background: #fdeaea;
+  color: #b71c1c;
+  border-radius: 6px;
+}
+
+.link {
+  text-align: center;
+  margin-top: 16px;
+}
