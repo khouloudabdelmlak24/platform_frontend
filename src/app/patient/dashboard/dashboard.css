@@ -1,0 +1,97 @@
+.dashboard-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+header button {
+  padding: 10px 18px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+section {
+  margin-bottom: 32px;
+}
+
+.profile-list {
+  line-height: 1.8;
+}
+
+.measure-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px 16px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.field input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.measure-form p,
+.measure-form button {
+  grid-column: 1 / -1;
+}
+
+.measure-form button {
+  padding: 12px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.measure-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  white-space: nowrap;
+}
+
+th {
+  background: #f5f5f5;
+}
+
+.error {
+  color: #b71c1c;
+}
+
+.success {
+  color: #2e7d32;
+}

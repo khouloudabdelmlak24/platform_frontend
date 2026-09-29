@@ -4,22 +4,97 @@
     <button (click)="logout()">Déconnexion</button>
   </header>
 
-  <p>Bienvenue — connexion réussie ✅</p>
+  <p class="error" *ngIf="profileError">{{ profileError }}</p>
 
-  <p><strong>Chargement du profil :</strong> {{ apiStatus }}</p>
-
-  <div *ngIf="profile">
+  <section *ngIf="profile">
     <h2>Mon profil</h2>
-    <ul>
+    <ul class="profile-list">
       <li><strong>Nom :</strong> {{ profile.firstName }} {{ profile.lastName }}</li>
       <li><strong>Email :</strong> {{ profile.email }}</li>
-      <li><strong>Date de naissance :</strong> {{ profile.dateOfBirth }}</li>
-      <li><strong>Genre :</strong> {{ profile.gender }}</li>
-      <li><strong>Adresse :</strong> {{ profile.address }}</li>
-      <li><strong>Contact d'urgence :</strong> {{ profile.emergencyContact }}</li>
-      <li><strong>Antécédents médicaux :</strong> {{ profile.medicalHistory }}</li>
-      <li><strong>Antécédents familiaux :</strong> {{ profile.familyHistory }}</li>
-      <li><strong>Traitements en cours :</strong> {{ profile.currentTreatments }}</li>
+      <li><strong>Date de naissance :</strong> {{ profile.dateOfBirth || '—' }}</li>
+      <li><strong>Genre :</strong> {{ profile.gender || '—' }}</li>
+      <li><strong>Adresse :</strong> {{ profile.address || '—' }}</li>
+      <li><strong>Contact d'urgence :</strong> {{ profile.emergencyContact || '—' }}</li>
+      <li><strong>Antécédents médicaux :</strong> {{ profile.medicalHistory || '—' }}</li>
+      <li><strong>Antécédents familiaux :</strong> {{ profile.familyHistory || '—' }}</li>
+      <li><strong>Traitements en cours :</strong> {{ profile.currentTreatments || '—' }}</li>
     </ul>
-  </div>
+  </section>
+
+  <section *ngIf="profile">
+    <h2>Ajouter une mesure</h2>
+
+    <form (ngSubmit)="addMeasurement()" class="measure-form">
+      <div class="field">
+        <label for="systolic">Pression systolique (mmHg) *</label>
+        <input id="systolic" name="systolic" type="number" [(ngModel)]="systolicPressure" />
+      </div>
+
+      <div class="field">
+        <label for="diastolic">Pression diastolique (mmHg) *</label>
+        <input id="diastolic" name="diastolic" type="number" [(ngModel)]="diastolicPressure" />
+      </div>
+
+      <div class="field">
+        <label for="glucose">Glycémie</label>
+        <input id="glucose" name="glucose" type="number" step="0.01" [(ngModel)]="bloodGlucose" />
+      </div>
+
+      <div class="field">
+        <label for="cholesterol">Cholestérol</label>
+        <input id="cholesterol" name="cholesterol" type="number" step="0.01" [(ngModel)]="cholesterol" />
+      </div>
+
+      <div class="field">
+        <label for="weight">Poids (kg)</label>
+        <input id="weight" name="weight" type="number" step="0.1" [(ngModel)]="weight" />
+      </div>
+
+      <div class="field">
+        <label for="height">Taille (cm)</label>
+        <input id="height" name="height" type="number" step="0.1" [(ngModel)]="height" />
+      </div>
+
+      <p class="error" *ngIf="formError">{{ formError }}</p>
+      <p class="success" *ngIf="formSuccess">{{ formSuccess }}</p>
+
+      <button type="submit" [disabled]="isSaving">
+        {{ isSaving ? 'Enregistrement...' : 'Enregistrer la mesure' }}
+      </button>
+    </form>
+  </section>
+
+  <section *ngIf="profile">
+    <h2>Historique de mes mesures</h2>
+
+    <p class="error" *ngIf="measurementsError">{{ measurementsError }}</p>
+    <p *ngIf="!measurementsError && measurements.length === 0">Aucune mesure enregistrée pour le moment.</p>
+
+    <div class="table-wrapper" *ngIf="measurements.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Tension</th>
+            <th>Glycémie</th>
+            <th>Cholestérol</th>
+            <th>Poids</th>
+            <th>Taille</th>
+            <th>BMI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of measurements">
+            <td>{{ m.measurementDate | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ m.systolicPressure }}/{{ m.diastolicPressure }}</td>
+            <td>{{ m.bloodGlucose ?? '—' }}</td>
+            <td>{{ m.cholesterol ?? '—' }}</td>
+            <td>{{ m.weight ?? '—' }}</td>
+            <td>{{ m.height ?? '—' }}</td>
+            <td>{{ m.bmi != null ? (m.bmi | number:'1.1-1') : '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>

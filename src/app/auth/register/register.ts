@@ -18,7 +18,6 @@ export class Register {
   password = '';
   phone = '';
   role: 'DOCTOR' | 'PATIENT' = 'PATIENT';
-
   errorMessage = '';
   isLoading = false;
 
