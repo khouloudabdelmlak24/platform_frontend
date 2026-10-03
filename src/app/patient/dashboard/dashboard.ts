@@ -14,6 +14,9 @@ interface Measurement {
   weight: number | null;
   height: number | null;
   bmi: number | null;
+  riskLevel: string | null;
+  riskScore: number | null;
+  riskFactors: string | null;
   measurementDate: string;
 }
 

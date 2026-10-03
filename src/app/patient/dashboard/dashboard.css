@@ -95,3 +95,24 @@ th {
 .success {
   color: #2e7d32;
 }
+.risk-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.risk-low {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.risk-moderate {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.risk-high {
+  background: #ffebee;
+  color: #c62828;
+}

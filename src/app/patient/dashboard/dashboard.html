@@ -72,28 +72,35 @@
 
     <div class="table-wrapper" *ngIf="measurements.length > 0">
       <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Tension</th>
-            <th>Glycémie</th>
-            <th>Cholestérol</th>
-            <th>Poids</th>
-            <th>Taille</th>
-            <th>BMI</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let m of measurements">
-            <td>{{ m.measurementDate | date:'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ m.systolicPressure }}/{{ m.diastolicPressure }}</td>
-            <td>{{ m.bloodGlucose ?? '—' }}</td>
-            <td>{{ m.cholesterol ?? '—' }}</td>
-            <td>{{ m.weight ?? '—' }}</td>
-            <td>{{ m.height ?? '—' }}</td>
-            <td>{{ m.bmi != null ? (m.bmi | number:'1.1-1') : '—' }}</td>
-          </tr>
-        </tbody>
+<thead>
+  <tr>
+    <th>Date</th>
+    <th>Tension</th>
+    <th>Glycémie</th>
+    <th>Cholestérol</th>
+    <th>Poids</th>
+    <th>Taille</th>
+    <th>BMI</th>
+    <th>Risque</th>
+  </tr>
+</thead>
+<tbody>
+  <tr *ngFor="let m of measurements">
+    <td>{{ m.measurementDate | date:'dd/MM/yyyy HH:mm' }}</td>
+    <td>{{ m.systolicPressure }}/{{ m.diastolicPressure }}</td>
+    <td>{{ m.bloodGlucose ?? '—' }}</td>
+    <td>{{ m.cholesterol ?? '—' }}</td>
+    <td>{{ m.weight ?? '—' }}</td>
+    <td>{{ m.height ?? '—' }}</td>
+    <td>{{ m.bmi != null ? (m.bmi | number:'1.1-1') : '—' }}</td>
+    <td>
+      <span *ngIf="m.riskLevel" class="risk-badge" [ngClass]="'risk-' + m.riskLevel.toLowerCase()">
+        {{ m.riskLevel }}
+      </span>
+      <span *ngIf="!m.riskLevel">—</span>
+    </td>
+  </tr>
+</tbody>
       </table>
     </div>
   </section>
