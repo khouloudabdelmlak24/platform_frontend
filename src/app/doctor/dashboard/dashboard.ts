@@ -56,6 +56,12 @@ export class DashboardComponent implements OnInit {
   predictingId: number | null = null;
   predictError = '';
 
+  // --- Historique ---
+  historyPatient: PatientItem | null = null;
+  history: RiskAssessment[] = [];
+  historyLoading = false;
+  historyError = '';
+
   constructor(
     private authService: Auth,
     private router: Router,
@@ -148,6 +154,44 @@ export class DashboardComponent implements OnInit {
     const factors = this.result?.topFactors ?? [];
     const max = Math.max(...factors.map(f => Math.abs(f.impact)), 0.0001);
     return Math.round((Math.abs(factor.impact) / max) * 100);
+  }
+
+    // Charge l'historique des évaluations d'un patient
+  openHistory(patient: PatientItem): void {
+    this.historyPatient = patient;
+    this.history = [];
+    this.historyError = '';
+    this.historyLoading = true;
+
+    this.riskService.getHistory(patient.id).subscribe({
+      next: (list) => {
+        // On ignore les anciennes lignes vides et on met la plus récente en premier
+        this.history = list
+          .filter(a => a.riskScore !== null)
+          .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+        this.historyLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.historyError = 'Erreur ' + err.status + ' : impossible de charger l\'historique.';
+        this.historyLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  closeHistory(): void {
+    this.historyPatient = null;
+    this.history = [];
+    this.historyError = '';
+  }
+
+  percent(score: number | null): number {
+    return Math.round((score ?? 0) * 100);
+  }
+
+  levelText(level: string | null): string {
+    return LEVEL_LABELS[level ?? ''] ?? 'Niveau inconnu';
   }
 
   logout(): void {
