@@ -28,6 +28,7 @@
         <th>Email</th>
         <th>Âge</th>
         <th>Genre</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody>
@@ -36,7 +37,54 @@
         <td>{{ p.email }}</td>
         <td>{{ getAge(p.dateOfBirth) ?? '—' }}</td>
         <td>{{ p.gender || '—' }}</td>
+        <td>
+          <button class="predict-btn" (click)="predict(p)" [disabled]="predictingId !== null">
+            {{ predictingId === p.id ? 'Calcul...' : 'Prédire le risque' }}
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>
+
+  <!-- Résultat de la prédiction -->
+  <section class="result-panel" *ngIf="selectedPatient && (result || predictError || predictingId !== null)">
+    <div class="result-header">
+      <h2>Évaluation : {{ selectedPatient.firstName }} {{ selectedPatient.lastName }}</h2>
+      <button class="close-btn" (click)="closeResult()">Fermer</button>
+    </div>
+
+    <p *ngIf="predictingId !== null">Calcul en cours...</p>
+    <p class="error" *ngIf="predictError">{{ predictError }}</p>
+
+    <div *ngIf="result">
+      <div class="score-row">
+        <div class="score-box">
+          <span class="score-number">{{ riskPercent }}%</span>
+          <span class="score-caption">probabilité estimée</span>
+        </div>
+        <span class="badge"
+              [class.badge-low]="result.riskLevel === 'LOW'"
+              [class.badge-moderate]="result.riskLevel === 'MODERATE'"
+              [class.badge-high]="result.riskLevel === 'HIGH'">
+          {{ levelLabel }}
+        </span>
+      </div>
+
+      <h3>Facteurs qui influencent ce résultat</h3>
+      <div class="factor" *ngFor="let f of result.topFactors">
+        <span class="factor-name">{{ featureLabel(f.feature) }}</span>
+        <div class="factor-track">
+          <div class="factor-bar"
+               [class.bar-up]="f.direction === 'increase'"
+               [class.bar-down]="f.direction !== 'increase'"
+               [style.width.%]="barWidth(f)"></div>
+        </div>
+        <span class="factor-dir">{{ f.direction === 'increase' ? 'augmente le risque' : 'diminue le risque' }}</span>
+      </div>
+
+      <p class="disclaimer">
+        Outil d'aide à la décision (modèle {{ result.modelVersion }}) : ce résultat ne remplace pas l'avis du médecin.
+      </p>
+    </div>
+  </section>
 </div>
