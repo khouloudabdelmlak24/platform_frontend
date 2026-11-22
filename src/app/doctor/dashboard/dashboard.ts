@@ -122,8 +122,8 @@ export class DashboardComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.predictError = 'Erreur ' + err.status + ' : impossible de calculer le risque. '
-          + 'Vérifiez que le patient a des mesures (taille, poids, tension) et que le service IA est démarré.';
+        this.predictError = err.error?.message
+          ?? ('Erreur ' + err.status + ' : impossible de calculer le risque pour le moment.');
         this.predictingId = null;
         this.cdr.detectChanges();
       }
