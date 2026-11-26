@@ -13,6 +13,10 @@
       <span class="stat-number">{{ completedProfiles }}</span>
       <span class="stat-label">Profils complétés</span>
     </div>
+    <div class="stat-card stat-danger">
+      <span class="stat-number">{{ highRiskCount }}</span>
+      <span class="stat-label">Patients à risque élevé</span>
+    </div>
   </div>
 
   <h2>Liste des patients</h2>
@@ -28,6 +32,7 @@
         <th>Email</th>
         <th>Âge</th>
         <th>Genre</th>
+        <th>Dernier risque</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -37,6 +42,16 @@
         <td>{{ p.email }}</td>
         <td>{{ getAge(p.dateOfBirth) ?? '—' }}</td>
         <td>{{ p.gender || '—' }}</td>
+        <td>
+          <span *ngIf="latestRisks[p.id] as lr; else noRisk"
+                class="badge"
+                [class.badge-low]="lr.riskLevel === 'LOW'"
+                [class.badge-moderate]="lr.riskLevel === 'MODERATE'"
+                [class.badge-high]="lr.riskLevel === 'HIGH'">
+            {{ levelText(lr.riskLevel) }} ({{ percent(lr.riskScore) }}%)
+          </span>
+          <ng-template #noRisk>—</ng-template>
+        </td>
         <td>
           <button class="predict-btn" (click)="predict(p)" [disabled]="predictingId !== null">
             {{ predictingId === p.id ? 'Calcul...' : 'Prédire le risque' }}
@@ -88,7 +103,8 @@
       </p>
     </div>
   </section>
-    <!-- Historique des évaluations -->
+
+  <!-- Historique des évaluations -->
   <section class="result-panel" *ngIf="historyPatient">
     <div class="result-header">
       <h2>Historique : {{ historyPatient.firstName }} {{ historyPatient.lastName }}</h2>

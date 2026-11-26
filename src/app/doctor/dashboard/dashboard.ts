@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Auth } from '../../core/services/auth';
 import { RiskAssessmentService } from '../../core/services/risk-assessment';
-import { RiskAssessment, RiskFactor } from '../../core/models/risk.model';
+import { PatientRiskSummary, RiskAssessment, RiskFactor } from '../../core/models/risk.model';
 
 interface PatientItem {
   id: number;
@@ -56,6 +56,9 @@ export class DashboardComponent implements OnInit {
   predictingId: number | null = null;
   predictError = '';
 
+  // Dernière évaluation de chaque patient, indexée par id de patient
+  latestRisks: Record<number, PatientRiskSummary> = {};
+
   // --- Historique ---
   historyPatient: PatientItem | null = null;
   history: RiskAssessment[] = [];
@@ -76,6 +79,8 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
+    this.loadLatestRisks();
+
     this.http.get<PatientItem[]>('http://localhost:8082/api/patients').subscribe({
       next: (data) => {
         this.patients = data;
@@ -90,9 +95,13 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Statistique : nombre de patients dont le profil est renseigné (date de naissance présente)
+  // Statistique : nombre de patients dont le profil est renseigné
   get completedProfiles(): number {
     return this.patients.filter(p => !!p.dateOfBirth).length;
+  }
+
+  get highRiskCount(): number {
+    return Object.values(this.latestRisks).filter(r => r.riskLevel === 'HIGH').length;
   }
 
   // Calcule l'âge à partir de la date de naissance (null si non renseignée)
@@ -108,6 +117,23 @@ export class DashboardComponent implements OnInit {
     return age;
   }
 
+  // Charge la dernière évaluation de chaque patient
+  loadLatestRisks(): void {
+    this.riskService.getLatestForAll().subscribe({
+      next: (list) => {
+        const map: Record<number, PatientRiskSummary> = {};
+        for (const r of list) {
+          map[r.patientId] = r;
+        }
+        this.latestRisks = map;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        // Non bloquant : le tableau reste affiché sans la colonne de risque
+      }
+    });
+  }
+
   // Lance la prédiction pour un patient
   predict(patient: PatientItem): void {
     this.selectedPatient = patient;
@@ -118,6 +144,7 @@ export class DashboardComponent implements OnInit {
     this.riskService.predict(patient.id).subscribe({
       next: (r) => {
         this.result = r;
+        this.loadLatestRisks();
         this.predictingId = null;
         this.cdr.detectChanges();
       },
@@ -136,27 +163,7 @@ export class DashboardComponent implements OnInit {
     this.predictError = '';
   }
 
-  // --- Aides d'affichage ---
-  get riskPercent(): number {
-    return Math.round((this.result?.riskScore ?? 0) * 100);
-  }
-
-  get levelLabel(): string {
-    return LEVEL_LABELS[this.result?.riskLevel ?? ''] ?? 'Niveau inconnu';
-  }
-
-  featureLabel(feature: string): string {
-    return FEATURE_LABELS[feature] ?? feature;
-  }
-
-  // Largeur de la barre (en %) proportionnelle à l'impact le plus fort
-  barWidth(factor: RiskFactor): number {
-    const factors = this.result?.topFactors ?? [];
-    const max = Math.max(...factors.map(f => Math.abs(f.impact)), 0.0001);
-    return Math.round((Math.abs(factor.impact) / max) * 100);
-  }
-
-    // Charge l'historique des évaluations d'un patient
+  // Charge l'historique des évaluations d'un patient
   openHistory(patient: PatientItem): void {
     this.historyPatient = patient;
     this.history = [];
@@ -165,7 +172,6 @@ export class DashboardComponent implements OnInit {
 
     this.riskService.getHistory(patient.id).subscribe({
       next: (list) => {
-        // On ignore les anciennes lignes vides et on met la plus récente en premier
         this.history = list
           .filter(a => a.riskScore !== null)
           .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -186,12 +192,32 @@ export class DashboardComponent implements OnInit {
     this.historyError = '';
   }
 
+  // --- Aides d'affichage ---
+  get riskPercent(): number {
+    return Math.round((this.result?.riskScore ?? 0) * 100);
+  }
+
+  get levelLabel(): string {
+    return LEVEL_LABELS[this.result?.riskLevel ?? ''] ?? 'Niveau inconnu';
+  }
+
   percent(score: number | null): number {
     return Math.round((score ?? 0) * 100);
   }
 
   levelText(level: string | null): string {
     return LEVEL_LABELS[level ?? ''] ?? 'Niveau inconnu';
+  }
+
+  featureLabel(feature: string): string {
+    return FEATURE_LABELS[feature] ?? feature;
+  }
+
+  // Largeur de la barre (en %) proportionnelle à l'impact le plus fort
+  barWidth(factor: RiskFactor): number {
+    const factors = this.result?.topFactors ?? [];
+    const max = Math.max(...factors.map(f => Math.abs(f.impact)), 0.0001);
+    return Math.round((Math.abs(factor.impact) / max) * 100);
   }
 
   logout(): void {

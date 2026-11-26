@@ -12,3 +12,10 @@ export interface RiskAssessment {
   topFactors: RiskFactor[] | null;
   createdAt: string;
 }
+
+export interface PatientRiskSummary {
+  patientId: number;
+  riskScore: number | null;
+  riskLevel: string | null;
+  createdAt: string;
+}

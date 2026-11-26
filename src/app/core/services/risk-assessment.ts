@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { RiskAssessment } from '../models/risk.model';
+import { PatientRiskSummary, RiskAssessment } from '../models/risk.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,5 +19,10 @@ export class RiskAssessmentService {
   // Historique des evaluations d'un patient
   getHistory(patientId: number): Observable<RiskAssessment[]> {
     return this.http.get<RiskAssessment[]>(`${this.apiUrl}/patients/${patientId}/risk-assessments`);
+  }
+
+  // Derniere evaluation de chaque patient (dashboard medecin)
+  getLatestForAll(): Observable<PatientRiskSummary[]> {
+    return this.http.get<PatientRiskSummary[]>(`${this.apiUrl}/doctor/risk-assessments/latest`);
   }
 }
